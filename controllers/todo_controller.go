@@ -40,6 +40,7 @@ func NewTodoController() *TodoControllerImpl {
 // Register registers controller methods with router
 func (tc *TodoControllerImpl) Register(router *mux.Router, r *render.Render) {
 	tc.r = r
+	router.HandleFunc("/todos/{id:[0-9]+}", tc.update).Methods("PUT")
 	router.HandleFunc("/todos/{id:[0-9]+}", tc.findOne)
 	router.HandleFunc("/todos", tc.create).Methods("POST")
 	router.HandleFunc("/todos", tc.find)
@@ -84,4 +85,20 @@ func (tc *TodoControllerImpl) create(res http.ResponseWriter, req *http.Request)
 
 	tc.todos = append(tc.todos, newTodo)
 	tc.r.JSON(res, http.StatusCreated, newTodo)
+}
+
+func (tc *TodoControllerImpl) update(res http.ResponseWriter, req *http.Request) {
+	dec := json.NewDecoder(req.Body)
+
+	var todo Todo
+	dec.Decode(&todo)
+
+	for i, item := range tc.todos {
+		if item.ID == todo.ID {
+			tc.todos[i] = todo
+			break
+		}
+	}
+
+	tc.r.JSON(res, http.StatusOK, todo)
 }
