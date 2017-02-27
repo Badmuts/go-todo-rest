@@ -1,59 +1,57 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
+	"time"
+
+	"encoding/json"
+
 	"github.com/gorilla/mux"
+	"github.com/unrolled/render"
 )
 
 type Todo struct {
-	ID   int    `json:"id"`
-	Todo string `json:"todo"`
-	Done bool   `json:"done"`
+	ID   int       `json:"id"`
+	Todo string    `json:"todo"`
+	Done bool      `json:"done"`
+	Due  time.Time `json:"due"`
 }
 
 type TodoControllerImpl struct {
 	controller string
 	todos      []Todo
+	r          *render.Render
 }
 
+// NewTodoController creates a new TodoController
 func NewTodoController() *TodoControllerImpl {
 	return &TodoControllerImpl{
 		controller: "TodoController",
 		todos: []Todo{
-			Todo{1, "Write some Go", true},
-			Todo{2, "Release on Github", false},
-			Todo{3, "Order Go Gopher mascot", false},
+			Todo{1, "Write some Go", true, time.Now()},
+			Todo{2, "Release on Github", false, time.Now()},
+			Todo{3, "Order Go Gopher mascot", false, time.Now()},
 		},
 	}
 }
 
-func (tc *TodoControllerImpl) Register(router *mux.Router) {
+// Register registers controller methods with router
+func (tc *TodoControllerImpl) Register(router *mux.Router, r *render.Render) {
+	tc.r = r
 	router.HandleFunc("/todos/{id:[0-9]+}", tc.findOne)
 	router.HandleFunc("/todos", tc.create).Methods("POST")
 	router.HandleFunc("/todos", tc.find)
 }
 
 func (tc *TodoControllerImpl) find(w http.ResponseWriter, r *http.Request) {
-	js, err := json.Marshal(tc.todos)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
+	tc.r.JSON(w, http.StatusOK, tc.todos)
 }
 
 func (tc *TodoControllerImpl) findOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
-	var todo Todo
-
-	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -62,26 +60,28 @@ func (tc *TodoControllerImpl) findOne(w http.ResponseWriter, r *http.Request) {
 
 	for _, item := range tc.todos {
 		if item.ID == id {
-			todo = item
+			tc.r.JSON(w, http.StatusOK, item)
+			return
 		}
 	}
 
-	if (Todo{}) == todo {
-		w.Write([]byte("{}"))
-		http.NotFound(w, r)
-		return
-	}
-
-	js, err := json.Marshal(todo)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(js)
+	tc.r.JSON(w, http.StatusNotFound, nil)
+	return
 }
 
-func (tc *TodoControllerImpl) create(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("stub create"))
+func (tc *TodoControllerImpl) create(res http.ResponseWriter, req *http.Request) {
+	dec := json.NewDecoder(req.Body)
+
+	var newTodo Todo
+	dec.Decode(&newTodo)
+
+	nextID := len(tc.todos) + 1
+	newTodo.ID = nextID
+
+	if newTodo.Due == (Todo{}.Due) {
+		newTodo.Due = time.Now().AddDate(0, 0, 10) // add 10 days
+	}
+
+	tc.todos = append(tc.todos, newTodo)
+	tc.r.JSON(res, http.StatusCreated, newTodo)
 }
