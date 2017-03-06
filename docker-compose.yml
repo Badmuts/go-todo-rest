@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: operations/docker/Dockerfile
+    ports: 
+      - "1337:1337"
 
   mysql:
     image: mysql
