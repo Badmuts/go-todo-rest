@@ -6,7 +6,11 @@ services:
       context: .
       dockerfile: operations/docker/Dockerfile
     ports: 
-      - "1337:1337"
+      - "3000:3000"
+    environment: 
+      - PORT=8080
+    volumes: 
+      - ".:/go/src/github.com/badmuts/go-todo-rest"
 
   mysql:
     image: mysql

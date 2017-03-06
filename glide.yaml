@@ -1,9 +1,5 @@
-package: .
+package: github.com/badmuts/go-todo-rest
 import:
-- package: github.com/badmuts/go-todo-rest
-  subpackages:
-  - controllers
-  - web
 - package: github.com/gorilla/mux
   version: ~1.3.0
 - package: github.com/unrolled/render
@@ -11,3 +7,4 @@ import:
   version: ~0.2.0
 - package: gopkg.in/tylerb/graceful.v1
   version: ~1.2.15
+- package: github.com/codegangsta/gin
