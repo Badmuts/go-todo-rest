@@ -1,5 +1,5 @@
-hash: 2bb2be2f94987183e45f8c9db410e7068f0821c111bab2632e9f75a28a70f83b
-updated: 2017-03-06T20:18:35.475873703+01:00
+hash: 9838d64e02e1abcf167fc955b8bec803d0ec7a7af71d0f53b6ec36c57c4532e6
+updated: 2017-03-06T23:20:32.979071522+01:00
 imports:
 - name: github.com/codegangsta/gin
   version: 4516172ddfe1db58bdb8eb4f422bc64fadd9a4df
@@ -7,6 +7,8 @@ imports:
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
   version: 392c28fe23e1c45ddba891b0320b3b5df220beea
+- name: github.com/imdario/mergo
+  version: 3e95a51e0639b4cf372f2ccf74c86749d747fbdc
 - name: github.com/unrolled/render
   version: 50716a0a853771bb36bfce61a45cdefdb98c2e6e
 - name: github.com/urfave/negroni

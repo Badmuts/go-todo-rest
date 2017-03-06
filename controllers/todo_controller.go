@@ -8,6 +8,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/badmuts/go-todo-rest/models"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
 )
@@ -21,7 +22,7 @@ type Todo struct {
 
 type TodoControllerImpl struct {
 	controller string
-	todos      map[string]Todo
+	todos      *models.Todos
 	r          *render.Render
 }
 
@@ -29,17 +30,14 @@ type TodoControllerImpl struct {
 func NewTodoController() *TodoControllerImpl {
 	return &TodoControllerImpl{
 		controller: "TodoController",
-		todos: map[string]Todo{
-			"1": Todo{1, "Write some Go", true, time.Now()},
-			"2": Todo{2, "Release on Github", false, time.Now()},
-			"3": Todo{3, "Order Go Gopher mascot", false, time.Now()},
-		},
+		todos:      models.NewTodos(),
 	}
 }
 
 // Register registers controller methods with router
 func (tc *TodoControllerImpl) Register(router *mux.Router, r *render.Render) {
 	tc.r = r
+	router.HandleFunc("/todos/{id:[0-9]+}", tc.delete).Methods("DELETE")
 	router.HandleFunc("/todos/{id:[0-9]+}", tc.update).Methods("PUT")
 	router.HandleFunc("/todos/{id:[0-9]+}", tc.findOne)
 	router.HandleFunc("/todos", tc.create).Methods("POST")
@@ -48,20 +46,23 @@ func (tc *TodoControllerImpl) Register(router *mux.Router, r *render.Render) {
 
 // find finds all Todo's in tc.todos
 func (tc *TodoControllerImpl) find(w http.ResponseWriter, r *http.Request) {
-	todos := make([]Todo, 0, len(tc.todos))
-	for _, todo := range tc.todos {
-		todos = append(todos, todo)
-	}
-	tc.r.JSON(w, http.StatusOK, todos)
+	tc.r.JSON(w, http.StatusOK, tc.todos.Flatten())
+}
+
+func (tc *TodoControllerImpl) delete(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	tc.todos.Remove(id)
+	tc.r.JSON(w, http.StatusOK, tc)
 }
 
 // findOne finds Todo in tc.todo with given ID
 func (tc *TodoControllerImpl) findOne(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	todo, found := tc.todos[vars["id"]]
+	id, _ := strconv.Atoi(vars["id"])
+	todo, found := tc.todos.Get(id)
 
 	if !found {
-		tc.r.JSON(w, http.StatusNotFound, []int{})
+		tc.r.JSON(w, http.StatusNotFound, tc)
 		return
 	}
 
@@ -71,27 +72,30 @@ func (tc *TodoControllerImpl) findOne(w http.ResponseWriter, r *http.Request) {
 
 // create creates a new Todo and appends it to tc.todos
 func (tc *TodoControllerImpl) create(res http.ResponseWriter, req *http.Request) {
-	var newTodo Todo
+	var newTodo models.Todo
 	dec := json.NewDecoder(req.Body)
 	dec.Decode(&newTodo)
 
-	nextID := len(tc.todos) + 1
-	newTodo.ID = nextID
+	newTodo.ID = tc.todos.Length() + 1
 
 	if newTodo.Due == (Todo{}.Due) {
 		newTodo.Due = time.Now().AddDate(0, 0, 10) // add 10 days
 	}
 
-	tc.todos[strconv.Itoa(nextID)] = newTodo
-	tc.r.JSON(res, http.StatusCreated, tc.todos[strconv.Itoa(nextID)])
+	tc.todos.Add(newTodo)
+	todo, _ := tc.todos.Get(newTodo.ID)
+
+	tc.r.JSON(res, http.StatusCreated, todo)
 }
 
 // update updates Todo in tc.todos
 func (tc *TodoControllerImpl) update(res http.ResponseWriter, req *http.Request) {
-	var todo Todo
+	var todo models.Todo
+	id, _ := strconv.Atoi(mux.Vars(req)["id"])
 	dec := json.NewDecoder(req.Body)
 	dec.Decode(&todo)
 
-	tc.todos[strconv.Itoa(todo.ID)] = todo
-	tc.r.JSON(res, http.StatusOK, todo)
+	oldTodo, _ := tc.todos.Get(id)
+
+	tc.r.JSON(res, http.StatusOK, tc.todos.Update(oldTodo, todo))
 }
