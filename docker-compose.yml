@@ -1,0 +1,15 @@
+version: "3"
+
+services: 
+  api:
+    build:
+      context: .
+      dockerfile: operations/docker/Dockerfile
+
+  mysql:
+    image: mysql
+    environment:
+      - MYSQL_DATABASE=todo
+      - MYSQL_USER=api
+      - MYSQL_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=test
