@@ -9,7 +9,7 @@ CURRENT=$$(git rev-parse --abbrev-ref HEAD)-$$(git rev-parse HEAD | cut -c1-7)
 all: run
 
 build:
-	docker build -t $(REPO)/$(IMAGE):$(CURRENT) -f operations/docker/Dockerfile
+	docker build -t $(REPO)/$(IMAGE):$(CURRENT) -f operations/docker/Dockerfile .
 
 test:
 	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
