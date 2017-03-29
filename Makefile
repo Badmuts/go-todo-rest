@@ -15,10 +15,10 @@ build:
 
 test:
 	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
-	docker run --rm -v $$(pwd)/coverage:/coverage go-todo-rest:test go test -v -coverprofile=/coverage/c.out
+	docker run --rm --volumes-from jenkins -v $$(pwd)/coverage:/coverage go-todo-rest:test go test -v -coverprofile=/coverage/c.out
 
 coverage:
-	docker run --rm -v $$(pwd)/coverage:/coverage go-todo-rest:test go tool cover -html=/coverage/c.out -o /coverage/coverage.html
+	docker run --rm --volumes-from jenkins -v $$(pwd)/coverage:/coverage go-todo-rest:test go tool cover -html=/coverage/c.out -o /coverage/coverage.html
 
 push: build
 	docker push $(REPO)/$(IMAGE):$(CURRENT)
