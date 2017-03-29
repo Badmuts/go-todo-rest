@@ -13,7 +13,7 @@ build:
 
 test:
 	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
-	docker run --rm -it go-todo-rest:test
+	docker run --rm go-todo-rest:test
 
 coverage:
 	echo "No coverage for you!"
