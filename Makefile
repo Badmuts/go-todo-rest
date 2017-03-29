@@ -18,7 +18,7 @@ test:
 	docker run --rm --volumes-from jenkins -v /var/jenkins_home/workspace/go-todo-rest/coverage go-todo-rest:test go test -v -coverprofile=/var/jenkins_home/workspace/go-todo-rest/coverage/c.out
 
 coverage:
-	docker run --rm --volumes-from jenkins -v /var/jenkins_home/workspace/go-todo-rest/coverage go-todo-rest:test go tool cover -html=/var/jenkins_home/workspace/go-todo-rest/coverage/c.out -o /var/jenkins_home/workspace/go-todo-rest/coverage /var/jenkins_home/workspace/go-todo-rest/coverage/coverage.html
+	docker run --rm --volumes-from jenkins -v /var/jenkins_home/workspace/go-todo-rest/coverage go-todo-rest:test go tool cover -html=/var/jenkins_home/workspace/go-todo-rest/coverage/c.out -o /var/jenkins_home/workspace/go-todo-rest/coverage/coverage.html
 
 push: build
 	docker push $(REPO)/$(IMAGE):$(CURRENT)
