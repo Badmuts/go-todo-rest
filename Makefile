@@ -10,4 +10,5 @@ compile: deps
 	go test -v
 
 build:
-	@docker run --rm -v $$(pwd):/usr/local/go/src/github.com/badmuts/go-todo-rest -w /usr/local/go/src/github.com/badmuts/go-todo-rest golang:1.8 bash -c make
+#	@docker run --rm -v $$(pwd):/usr/local/go/src/github.com/badmuts/go-todo-rest -w /usr/local/go/src/github.com/badmuts/go-todo-rest golang:1.8 bash -c make
+	@docker run --rm -v $$(pwd):/usr/local/go/src/github.com/badmuts/go-todo-rest -w /usr/local/go/src/github.com/badmuts/go-todo-rest golang:1.8 bash -c ls -lah
