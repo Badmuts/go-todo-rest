@@ -4,7 +4,7 @@ REPO=badmuts
 IMAGE=go-todo-rest
 
 # Current branch-commit (example: master-ab01c1z)
-CURRENT=$$(git rev-parse --abbrev-ref HEAD)-$$(git rev-parse HEAD | cut -c1-7)
+CURRENT=$$GIT_LOCAL_BRANCH-$$(git rev-parse HEAD | cut -c1-7)
 
 all: run
 
