@@ -14,4 +14,4 @@ ENV PORT 8080
 # Expose port 3000 to the host so we can access the gin proxy
 EXPOSE 3000
 # Now tell Docker what command to run when the container starts
-CMD go run main.go
+CMD gin run

@@ -1,14 +1,21 @@
-all: compile
-
-deps:
-	ls -lah
-	go get -d -v
-	go install -v
-
-compile: deps
-	go build -v
-	go test -v
+all: run
 
 build:
-#	@docker run --rm -v $$(pwd):/usr/local/go/src/github.com/badmuts/go-todo-rest -w /usr/local/go/src/github.com/badmuts/go-todo-rest golang:1.8 bash -c make
-	@docker run --rm -v $$(pwd):/usr/local/go/src/github.com/badmuts/go-todo-rest -w /usr/local/go/src/github.com/badmuts/go-todo-rest golang:1.8 bash -c ls -lah
+	docker build -t badmuts/$$JOB_NAME:$$GIT_BRANCH-$$BUILD_NUMBER -f operations/docker/Dockerfile
+
+test:
+	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
+	docker run --rm -it go-todo-rest:test
+
+coverage:
+	echo "No coverage for you!"
+
+push: build
+	docker push badmuts/$$JOB_NAME:$$GIT_BRANCH-$$BUILD_NUMBER
+
+cleanup:
+	docker rmi go-todo-rest:test
+	docker rmi badmuts/$$JOB_NAME:$$GIT_BRANCH-$$BUILD_NUMBER
+
+run:
+	docker-compose up -d
