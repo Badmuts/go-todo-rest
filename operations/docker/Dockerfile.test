@@ -10,4 +10,4 @@ COPY . /go/src/github.com/badmuts/go-todo-rest
 RUN curl https://glide.sh/get | sh
 RUN glide install
 
-CMD go test -v
+VOLUME ["/coverage"]

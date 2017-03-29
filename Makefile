@@ -6,6 +6,8 @@ IMAGE=go-todo-rest
 # Current branch-commit (example: master-ab01c1z)
 CURRENT=`echo $$GIT_BRANCH | cut -d'/' -f 2-`-$$(git rev-parse HEAD | cut -c1-7)
 
+.PHONY: coverage
+
 all: run
 
 build:
@@ -13,10 +15,10 @@ build:
 
 test:
 	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
-	docker run --rm go-todo-rest:test
+	docker run --rm -v $$(pwd)/coverage:/coverage go-todo-rest:test go test -v -coverprofile=/coverage/c.out
 
 coverage:
-	echo "No coverage for you!"
+	docker run --rm -v $$(pwd)/coverage:/coverage go-todo-rest:test go tool cover -html=/coverage/c.out -o /coverage/coverage.html
 
 push: build
 	docker push $(REPO)/$(IMAGE):$(CURRENT)
