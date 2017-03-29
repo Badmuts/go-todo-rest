@@ -1,6 +1,7 @@
 all: compile
 
 deps:
+	ls -lah
 	go get -d -v
 	go install -v
 
