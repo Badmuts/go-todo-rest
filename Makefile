@@ -36,8 +36,8 @@ mv-jenkins-build:
 # Jenkins step to run complete pipeline
 ci-jenkins-tests:
 	docker build -t go-todo-rest:test -f operations/docker/Dockerfile.test .
-	docker run --rm --volumes-from jenkins go-todo-rest:test bash -c make suite && make mv-jenkins-reports
-	docker run --rm --volumes-from jenkins go-todo-rest:test bash -c make compile && make mv-jenkins-build
+	docker run --rm --volumes-from jenkins go-todo-rest:test bash -c 'make suite && make mv-jenkins-reports'
+	docker run --rm --volumes-from jenkins go-todo-rest:test bash -c 'make compile && make mv-jenkins-build'
 
 # Jenkins step to run complete pipeline
 ci-jenkins: ci-jenkins-tests build push cleanup
