@@ -7,8 +7,6 @@ WORKDIR /go/src/github.com/badmuts/go-todo-rest
 # Copy the go-todo-rest directory (where the Dockerfile lives) into the container.
 COPY . /go/src/github.com/badmuts/go-todo-rest
 
-VOLUME ["/go/src/github.com/badmuts/go-todo-rest"]
-
 # Download and install any required third party dependencies into the container.
 RUN go get -u github.com/golang/lint/golint
 RUN curl https://glide.sh/get | sh
