@@ -44,7 +44,7 @@ ci-jenkins: ci-jenkins-tests build push cleanup
 
 # Create binary
 compile:
-	go build 
+	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo .
 
 # Create docker image with tag badmuts/go-todo-rest:branch-sha
 build:

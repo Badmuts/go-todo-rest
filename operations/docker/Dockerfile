@@ -17,6 +17,6 @@
 # CMD go run main.go
 
 FROM scratch
-COPY go-todo-rest /go-todo-rest
+COPY ./go-todo-rest /go-todo-rest
 ENV PORT 8080
-CMD /go-todo-rest
+CMD ["/go-todo-rest"]
