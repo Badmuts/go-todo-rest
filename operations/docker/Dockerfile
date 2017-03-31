@@ -1,17 +1,24 @@
-# Base this docker container off the official golang docker image.
-# Docker containers inherit everything from their base.
-FROM golang:1.8.0
-# Create a directory inside the container to store all our application and then make it the working directory.
-RUN mkdir -p /go/src/github.com/badmuts/go-todo-rest
-WORKDIR /go/src/github.com/badmuts/go-todo-rest
-# Copy the go-todo-rest directory (where the Dockerfile lives) into the container.
-COPY . /go/src/github.com/badmuts/go-todo-rest
-# Download and install any required third party dependencies into the container.
-RUN curl https://glide.sh/get | sh
-RUN glide install
-# Set the PORT environment variable inside the container
+# # Base this docker container off the official golang docker image.
+# # Docker containers inherit everything from their base.
+# FROM golang:1.8.0
+# # Create a directory inside the container to store all our application and then make it the working directory.
+# RUN mkdir -p /go/src/github.com/badmuts/go-todo-rest
+# WORKDIR /go/src/github.com/badmuts/go-todo-rest
+# # Copy the go-todo-rest directory (where the Dockerfile lives) into the container.
+# COPY . /go/src/github.com/badmuts/go-todo-rest
+# # Download and install any required third party dependencies into the container.
+# RUN curl https://glide.sh/get | sh
+# RUN glide install
+# # Set the PORT environment variable inside the container
+# ENV PORT 8080
+# # Expose port 3000 to the host so we can access the gin proxy
+# EXPOSE 3000
+# # Now tell Docker what command to run when the container starts
+# CMD go run main.go
+
+FROM scratch
+COPY go-todo-rest /go-todo-rest
 ENV PORT 8080
-# Expose port 3000 to the host so we can access the gin proxy
-EXPOSE 3000
-# Now tell Docker what command to run when the container starts
-CMD go run main.go
+# Is this working...?
+EXPOSE PORT
+CMD /go-todo-rest
