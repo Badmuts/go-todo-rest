@@ -19,6 +19,4 @@
 FROM scratch
 COPY go-todo-rest /go-todo-rest
 ENV PORT 8080
-# Is this working...?
-EXPOSE PORT
 CMD /go-todo-rest
